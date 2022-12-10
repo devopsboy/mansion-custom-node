@@ -1,0 +1,35 @@
+### Reference docker-compose for mansion project to run
+
+version: '3.9'
+
+services:
+  frontend:
+    image: sanjail/jack:fe-1.0.0
+    container_name: "web"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  backend: 
+    image: sanjail/jack:be-1.0.0
+    container_name: "server"
+    environment:
+      JWT_SECRET: ""
+    ports:
+      - "5001:5001"
+    depends_on:
+      - postgres
+  
+  postgres:
+    image: postgres:14.1-alpine
+    container_name: "postgres"
+    restart: always
+    environment:
+      POSTGRES_USER: ""
+      POSTGRES_PASSWORD: ""
+      POSTGRES_DB: ""
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
