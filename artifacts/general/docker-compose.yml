@@ -1,0 +1,51 @@
+version: "3"
+
+networks:
+  mansion:
+
+services:
+
+  backend:
+    container_name: server
+    image: sanjail/jack:backend-1.0.0
+    expose:
+      - 3000
+    networks:
+      - mansion
+    environment:
+      - JWT_SECRET=
+      - PGHOST=
+      - PGUSER=postgres
+      - PGPASSWORD=
+      - PGDATABASE=
+      - PGPORT=5432
+    restart: always
+
+  frontend:
+    container_name: web
+    image: sanjail/jack:frontend-1.0.0
+    expose:
+      - 80
+    networks:
+      - mansion
+    restart: always
+
+  nginx:
+    container_name: nginx 
+    depends_on:
+      - backend
+      - frontend
+    image: nginx:alpine
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ./ssl/:/usr/share/nginx/ssl/
+    networks:
+      - mansion
+    restart: always
+
+#frontend URL - https://mansion.rrprojx.com/
+#backend URL - https://mansion-api.rrprojx.com/
